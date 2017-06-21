@@ -38,7 +38,7 @@ profiles-composer-install:
             - profiles-repository
 
 profiles-config:
-    file.managed;
+    file.managed:
         - name: /srv/profiles/config.php
         - source: salt://profiles/config/srv-profiles-config.php
         - template: jinja
