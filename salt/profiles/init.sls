@@ -22,6 +22,21 @@ profiles-repository:
         - require:
             - builder: profiles-repository
 
+
+profiles-composer-install:
+    cmd.run:
+        {% if pillar.elife.env in ['prod', 'demo', 'end2end', 'continuumtest'] %}
+        - name: composer --no-interaction install --classmap-authoritative --no-dev
+        {% elif pillar.elife.env in ['ci'] %}
+        - name: composer --no-interaction install --classmap-authoritative
+        {% else %}
+        - name: composer --no-interaction install
+        {% endif %}
+        - cwd: /srv/profiles/
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - profiles-repository
+
 profiles-nginx-vhost:
     file.managed:
         - name: /etc/nginx/sites-enabled/profiles.conf
@@ -29,6 +44,7 @@ profiles-nginx-vhost:
         - template: jinja
         - require:
             - nginx-config
+            - profiles-composer-install
         - listen_in:
             - service: nginx-server-service
             - service: php-fpm
