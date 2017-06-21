@@ -37,6 +37,16 @@ profiles-composer-install:
         - require:
             - profiles-repository
 
+profiles-config:
+    file.managed;
+        - name: /srv/profiles/config.php
+        - source: salt://profiles/config/srv-profiles-config.php
+        - template: jinja
+        - user: {{ pillar.elife.deploy_user.username }}
+        - group: {{ pillar.elife.deploy_user.username }}
+        - require: 
+            - profiles-composer-install
+
 profiles-nginx-vhost:
     file.managed:
         - name: /etc/nginx/sites-enabled/profiles.conf
@@ -44,7 +54,7 @@ profiles-nginx-vhost:
         - template: jinja
         - require:
             - nginx-config
-            - profiles-composer-install
+            - profiles-config
         - listen_in:
             - service: nginx-server-service
             - service: php-fpm
