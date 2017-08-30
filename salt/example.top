@@ -1,9 +1,7 @@
 base:
     '*':
         - elife
-        - elife.php7
-        - elife.composer
+        - elife.python3
+        - elife.uwsgi
         - elife.nginx
-        - elife.nginx-php7
         - profiles
-        - elife.proofreader-php

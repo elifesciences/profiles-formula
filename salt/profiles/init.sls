@@ -23,15 +23,9 @@ profiles-repository:
             - builder: profiles-repository
 
 
-profiles-composer-install:
+profiles-install:
     cmd.run:
-        {% if pillar.elife.env in ['prod', 'demo', 'end2end', 'continuumtest'] %}
-        - name: composer --no-interaction install --classmap-authoritative --no-dev
-        {% elif pillar.elife.env in ['ci'] %}
-        - name: composer --no-interaction install --classmap-authoritative
-        {% else %}
-        - name: composer --no-interaction install
-        {% endif %}
+        - name: ./install.sh
         - cwd: /srv/profiles/
         - user: {{ pillar.elife.deploy_user.username }}
         - require:
@@ -39,8 +33,8 @@ profiles-composer-install:
 
 profiles-config:
     file.managed:
-        - name: /srv/profiles/config.php
-        - source: salt://profiles/config/srv-profiles-config.php
+        - name: /srv/profiles/app.cfg
+        - source: salt://profiles/config/srv-profiles-app.cfg
         - template: jinja
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
