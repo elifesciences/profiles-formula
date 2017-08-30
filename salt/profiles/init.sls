@@ -9,8 +9,6 @@ profiles-repository:
         - force_checkout: True
         - force_reset: True
         - fetch_pull_requests: True
-        - require:
-            - composer
 
     file.directory:
         - name: /srv/profiles
@@ -31,7 +29,7 @@ profiles-install:
         - require:
             - profiles-repository
 
-profiles-config:
+profiles-app-config:
     file.managed:
         - name: /srv/profiles/app.cfg
         - source: salt://profiles/config/srv-profiles-app.cfg
@@ -39,7 +37,34 @@ profiles-config:
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
         - require: 
-            - profiles-composer-install
+            - profiles-install
+
+profiles-uwsgi-config:
+    file.managed:
+        - name: /srv/profiles/uwsgi.ini
+        - source: salt://profiles/config/srv-profiles-uwsgi.ini
+        - template: jinja
+        - require:
+            - profiles-install
+
+profiles-uwsgi-service:
+    file.managed:
+        - name: /etc/init/uwsgi-profiles.conf
+        - source: salt://profiles/config/etc-init-uwsgi-profiles.conf
+        - template: jinja
+        - require:
+            - profiles-install
+            - profiles-app-config
+            - profiles-uwsgi-config
+
+    service.running:
+        - name: uwsgi-profiles
+        - enable: True
+        - reload: True
+        - require:
+            - file: profiles-uwsgi-service
+        - watch:
+            - profiles-install
 
 profiles-nginx-vhost:
     file.managed:
@@ -48,7 +73,7 @@ profiles-nginx-vhost:
         - template: jinja
         - require:
             - nginx-config
-            - profiles-config
+            - profiles-uwsgi-service
         - listen_in:
             - service: nginx-server-service
-            - service: php-fpm
+
