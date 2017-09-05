@@ -1,9 +1,9 @@
 profiles:
-    #oauth_clients:
-    #    app:
-    #        client_id: foo
-    #        client_secret: bar
-    #        redirect_uri: http://localhost/check
+    oauth_clients:
+        some-app:
+            client_id: foo
+            client_secret: bar
+            redirect_uri: https://example.com/check
     orcid:
         authorize_uri: https://orcid.org/oauth/authorize
         token_uri: https://orcid.org/oauth/token
