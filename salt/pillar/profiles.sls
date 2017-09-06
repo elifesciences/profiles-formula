@@ -9,3 +9,4 @@ profiles:
         token_uri: https://orcid.org/oauth/token
         client_id: null
         client_secret: null
+    default_host: localhost
