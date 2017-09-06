@@ -5,3 +5,4 @@ base:
         - elife.uwsgi
         - elife.nginx
         - profiles
+        - profiles.orcid-dummy

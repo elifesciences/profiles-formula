@@ -10,3 +10,5 @@ profiles:
         client_id: null
         client_secret: null
     default_host: localhost
+    orcid_dummy:
+        pinned_revision_file: /srv/profiles/orcid-dummy.sha1
