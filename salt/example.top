@@ -5,3 +5,8 @@ base:
         - elife.uwsgi
         - elife.nginx
         - profiles
+        # for testing purposes:
+        - elife.php7
+        - elife.composer
+        - elife.nginx-php7
+        - profiles.orcid-dummy
