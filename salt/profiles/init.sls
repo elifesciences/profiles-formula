@@ -76,6 +76,9 @@ profiles-uwsgi-service:
             - file: profiles-uwsgi-service
         - watch:
             - profiles-install
+            - profiles-app-config
+            - profiles-clients-config
+            - profiles-uwsgi-config
 
 profiles-nginx-vhost:
     file.managed:
