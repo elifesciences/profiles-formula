@@ -71,9 +71,7 @@ profiles-uwsgi-service:
         - require:
             - file: profiles-uwsgi-service
         - watch:
-            - profiles-install
-            - profiles-app-config
-            - profiles-clients-config
+            - file: /srv/profiles*
             - profiles-uwsgi-config
 
 profiles-nginx-vhost:
