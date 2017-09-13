@@ -39,6 +39,16 @@ profiles-app-config:
         - require: 
             - profiles-install
 
+profiles-clients-config:
+    file.managed:
+        - name: /srv/profiles/clients.yaml
+        - source: salt://profiles/config/srv-profiles-clients.yaml
+        - template: jinja
+        - user: {{ pillar.elife.deploy_user.username }}
+        - group: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - profiles-install
+
 profiles-uwsgi-config:
     file.managed:
         - name: /srv/profiles/uwsgi.ini
@@ -55,6 +65,7 @@ profiles-uwsgi-service:
         - require:
             - profiles-install
             - profiles-app-config
+            - profiles-clients-config
             - profiles-uwsgi-config
 
     service.running:
