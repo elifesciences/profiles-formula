@@ -28,6 +28,7 @@ profiles-install:
         - user: {{ pillar.elife.deploy_user.username }}
         - require:
             - profiles-repository
+            - profiles-app-config
 
 profiles-app-config:
     file.managed:
@@ -37,7 +38,7 @@ profiles-app-config:
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
         - require: 
-            - profiles-install
+            - profiles-repository
 
 profiles-clients-config:
     file.managed:
@@ -47,7 +48,7 @@ profiles-clients-config:
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
         - require:
-            - profiles-install
+            - profiles-repository
 
 profiles-uwsgi-config:
     file.managed:
@@ -55,18 +56,13 @@ profiles-uwsgi-config:
         - source: salt://profiles/config/srv-profiles-uwsgi.ini
         - template: jinja
         - require:
-            - profiles-install
+            - profiles-repository
 
 profiles-uwsgi-service:
     file.managed:
         - name: /etc/init/uwsgi-profiles.conf
         - source: salt://profiles/config/etc-init-uwsgi-profiles.conf
         - template: jinja
-        - require:
-            - profiles-install
-            - profiles-app-config
-            - profiles-clients-config
-            - profiles-uwsgi-config
 
     service.running:
         - name: uwsgi-profiles
