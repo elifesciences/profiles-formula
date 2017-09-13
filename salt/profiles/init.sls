@@ -20,15 +20,6 @@ profiles-repository:
         - require:
             - builder: profiles-repository
 
-
-profiles-install:
-    cmd.run:
-        - name: ./install.sh
-        - cwd: /srv/profiles/
-        - user: {{ pillar.elife.deploy_user.username }}
-        - require:
-            - profiles-repository
-
 profiles-app-config:
     file.managed:
         - name: /srv/profiles/app.cfg
@@ -37,7 +28,26 @@ profiles-app-config:
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
         - require: 
-            - profiles-install
+            - profiles-repository
+
+profiles-install:
+    cmd.run:
+        - name: ./install.sh
+        - cwd: /srv/profiles/
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - profiles-repository
+            - profiles-app-config
+
+profiles-clients-config:
+    file.managed:
+        - name: /srv/profiles/clients.yaml
+        - source: salt://profiles/config/srv-profiles-clients.yaml
+        - template: jinja
+        - user: {{ pillar.elife.deploy_user.username }}
+        - group: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - profiles-repository
 
 profiles-uwsgi-config:
     file.managed:
@@ -45,26 +55,22 @@ profiles-uwsgi-config:
         - source: salt://profiles/config/srv-profiles-uwsgi.ini
         - template: jinja
         - require:
-            - profiles-install
+            - profiles-repository
 
 profiles-uwsgi-service:
     file.managed:
         - name: /etc/init/uwsgi-profiles.conf
         - source: salt://profiles/config/etc-init-uwsgi-profiles.conf
         - template: jinja
-        - require:
-            - profiles-install
-            - profiles-app-config
-            - profiles-uwsgi-config
 
-    service.running:
-        - name: uwsgi-profiles
-        - enable: True
-        - reload: True
+    cmd.run:
+        - name: service uwsgi-profiles restart
         - require:
             - file: profiles-uwsgi-service
-        - watch:
+            - profiles-app-config
+            - profiles-clients-config
             - profiles-install
+            - profiles-uwsgi-config
 
 profiles-nginx-vhost:
     file.managed:
@@ -76,4 +82,3 @@ profiles-nginx-vhost:
             - profiles-uwsgi-service
         - listen_in:
             - service: nginx-server-service
-
