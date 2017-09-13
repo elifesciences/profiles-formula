@@ -64,14 +64,13 @@ profiles-uwsgi-service:
         - source: salt://profiles/config/etc-init-uwsgi-profiles.conf
         - template: jinja
 
-    service.running:
-        - name: uwsgi-profiles
-        - enable: True
-        - reload: True
+    cmd.run:
+        - name: service uwsgi-profiles restart
         - require:
             - file: profiles-uwsgi-service
-        - watch:
-            - file: /srv/profiles*
+            - profiles-app-config
+            - profiles-clients-config
+            - profiles-install
             - profiles-uwsgi-config
 
 profiles-nginx-vhost:
@@ -84,4 +83,3 @@ profiles-nginx-vhost:
             - profiles-uwsgi-service
         - listen_in:
             - service: nginx-server-service
-
