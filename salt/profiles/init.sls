@@ -20,16 +20,6 @@ profiles-repository:
         - require:
             - builder: profiles-repository
 
-
-profiles-install:
-    cmd.run:
-        - name: ./install.sh
-        - cwd: /srv/profiles/
-        - user: {{ pillar.elife.deploy_user.username }}
-        - require:
-            - profiles-repository
-            - profiles-app-config
-
 profiles-app-config:
     file.managed:
         - name: /srv/profiles/app.cfg
@@ -39,6 +29,15 @@ profiles-app-config:
         - group: {{ pillar.elife.deploy_user.username }}
         - require: 
             - profiles-repository
+
+profiles-install:
+    cmd.run:
+        - name: ./install.sh
+        - cwd: /srv/profiles/
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - profiles-repository
+            - profiles-app-config
 
 profiles-clients-config:
     file.managed:
