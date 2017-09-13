@@ -1,5 +1,5 @@
 {% for name, details in pillar.profiles.get('oauth_clients', {}).items() %}
-{{ name}}:
+{{ name }}:
   client_id: {{ details.client_id }}
   client_secret: {{ details.client_secret }}
   redirect_uri: {{ details.redirect_uri }}
