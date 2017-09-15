@@ -4,7 +4,9 @@ base:
         - elife.python3
         - elife.uwsgi
         - elife.nginx
+        - elife.postgresql
         - profiles
+        - profiles.postgresql
         # for testing purposes:
         - elife.php7
         - elife.composer

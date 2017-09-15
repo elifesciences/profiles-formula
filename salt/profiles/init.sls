@@ -38,6 +38,7 @@ profiles-install:
         - require:
             - profiles-repository
             - profiles-app-config
+            - profiles-db
 
 profiles-clients-config:
     file.managed:
