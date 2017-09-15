@@ -10,5 +10,11 @@ profiles:
         client_id: null
         client_secret: null
     default_host: localhost
+    db:
+        name: profiles
+        username: foouser # case sensitive. use all lowercase
+        password: barpass
+        host: 127.0.0.1
+        port: 5432
     orcid_dummy:
         pinned_revision_file: /srv/profiles/orcid-dummy.sha1
