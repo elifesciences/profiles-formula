@@ -10,6 +10,7 @@ profiles:
         client_id: null
         client_secret: null
     default_host: localhost
+    default_scheme: http
     db:
         name: profiles
         username: foouser # case sensitive. use all lowercase
