@@ -104,3 +104,22 @@ profiles-nginx-vhost:
             - profiles-uwsgi-service
         - listen_in:
             - service: nginx-server-service
+
+profiles-syslog-ng:
+    file.managed:
+        - name: /etc/syslog-ng/conf.d/profiles.conf
+        - source: salt://profiles/config/etc-syslog-ng-conf.d-profiles.conf
+        - template: jinja
+        - require:
+            - pkg: syslog-ng
+            - profiles-logs
+        - listen_in:
+            - service: syslog-ng
+
+profiles-logrotate:
+    file.managed:
+        - name: /etc/logrotate.d/profiles
+        - source: salt://profiles/config/etc-logrotate.d-profiles
+        - template: jinja
+        - require:
+            - profiles-logs
