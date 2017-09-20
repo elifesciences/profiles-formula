@@ -20,6 +20,26 @@ profiles-repository:
         - require:
             - builder: profiles-repository
 
+profiles-logs:
+    file.directory:
+        - name: /srv/profiles/var/logs/
+        - user: {{ pillar.elife.webserver.username }}
+        - group: {{ pillar.elife.webserver.username }}
+        - dir_mode: 775
+        - file_mode: 664
+        - recurse:
+            - user
+            - group
+        - require:
+            - profiles-repository
+
+    # the g+s flag makes sure that new files and directories 
+    # created inside have the www-data group
+    cmd.run:
+        - name: chmod -R g+s /srv/profiles/var/logs
+        - require:
+            - file: profiles-repository
+
 profiles-app-config:
     file.managed:
         - name: /srv/profiles/app.cfg
@@ -29,6 +49,7 @@ profiles-app-config:
         - group: {{ pillar.elife.deploy_user.username }}
         - require: 
             - profiles-repository
+            - profiles-logs
 
 profiles-install:
     cmd.run:

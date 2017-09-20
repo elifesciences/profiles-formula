@@ -16,5 +16,7 @@ profiles:
         password: barpass
         host: 127.0.0.1
         port: 5432
+    logging:
+        level: DEBUG
     orcid_dummy:
         pinned_revision_file: /srv/profiles/orcid-dummy.sha1
