@@ -5,6 +5,7 @@ profiles:
             client_secret: bar
             redirect_uri: https://example.com/check
     orcid:
+        api_uri: https://api.orcid.org
         authorize_uri: https://orcid.org/oauth/authorize
         token_uri: https://orcid.org/oauth/token
         client_id: null
