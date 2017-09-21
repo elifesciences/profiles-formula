@@ -1,4 +1,4 @@
-/srv/search/var/logs/*.json {
+/srv/profiles/var/logs/*.log {
     daily
     rotate 7
     notifempty
