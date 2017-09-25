@@ -60,6 +60,7 @@ profiles-install:
             - profiles-repository
             - profiles-app-config
             - profiles-db
+            - profiles-db-possible-cleanup
 
 profiles-clients-config:
     file.managed:
