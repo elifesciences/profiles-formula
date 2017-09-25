@@ -68,6 +68,6 @@ profiles-db-possible-cleanup:
         - require:
             - profiles-db
 {% else %}
-        - name: echo Nothing to do
+        - name: echo "Nothing to do"
 {% endif %}
 
