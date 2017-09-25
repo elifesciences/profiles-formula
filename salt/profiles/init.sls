@@ -51,17 +51,6 @@ profiles-app-config:
             - profiles-repository
             - profiles-logs
 
-profiles-install:
-    cmd.run:
-        - name: ./install.sh
-        - cwd: /srv/profiles/
-        - user: {{ pillar.elife.deploy_user.username }}
-        - require:
-            - profiles-repository
-            - profiles-app-config
-            - profiles-db
-            - profiles-db-possible-cleanup
-
 profiles-clients-config:
     file.managed:
         - name: /srv/profiles/clients.yaml
@@ -71,6 +60,18 @@ profiles-clients-config:
         - group: {{ pillar.elife.deploy_user.username }}
         - require:
             - profiles-repository
+
+profiles-install:
+    cmd.run:
+        - name: ./install.sh
+        - cwd: /srv/profiles/
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - profiles-repository
+            - profiles-app-config
+            - profiles-clients-config
+            - profiles-db
+            - profiles-db-possible-cleanup
 
 profiles-uwsgi-config:
     file.managed:
