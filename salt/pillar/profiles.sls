@@ -22,3 +22,9 @@ profiles:
         level: DEBUG
     orcid_dummy:
         pinned_revision_file: /srv/profiles/orcid-dummy.sha1
+
+elife:
+    newrelic_python:
+        application_folder: /srv/profiles
+        service: # blank as always restarted
+        dependency_state: profiles-install
