@@ -49,6 +49,7 @@ orcid-dummy-composer-install:
           - COMPOSER_DISCARD_CHANGES: 'true'
         - require:
             - orcid-dummy-repository
+            - composer
 
 orcid-dummy-nginx-vhost:
     file.managed:
