@@ -81,16 +81,24 @@ profiles-uwsgi-config:
         - require:
             - profiles-repository
 
-profiles-uwsgi-service:
+profiles-uwsgi-upstart:
     file.managed:
         - name: /etc/init/uwsgi-profiles.conf
         - source: salt://profiles/config/etc-init-uwsgi-profiles.conf
         - template: jinja
 
+profiles-uwsgi-systemd:
+    file.managed:
+        - name: /lib/systemd/system/uwsgi-profiles.service
+        - source: salt://profiles/config/lib-systemd-system-uwsgi-profiles.service
+        - template: jinja
+
+profiles-uwsgi-service:
     cmd.run:
         - name: service uwsgi-profiles restart
         - require:
-            - file: profiles-uwsgi-service
+            - profiles-uwsgi-upstart
+            - profiles-uwsgi-systemd
             - profiles-app-config
             - profiles-clients-config
             - profiles-install
