@@ -7,6 +7,7 @@ base:
         - elife.postgresql
         - profiles
         - profiles.postgresql
+        - elife.newrelic-python
         # for testing purposes:
         - elife.php7
         - elife.composer

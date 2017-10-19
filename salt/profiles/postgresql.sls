@@ -37,3 +37,37 @@ profiles-db:
         {% endif %}
         - require:
             - profiles-db-user
+
+    cmd.run:
+        - owner: {{ pillar.profiles.db.username }}
+        - name: public
+        {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
+        # remote psql
+        - name: |
+            psql -h {{ salt['elife.cfg']('cfn.outputs.RDSHost') }} -p {{ salt['elife.cfg']('cfn.outputs.RDSPort') }} --no-password {{ salt['elife.cfg']('project.rds_dbname') }} {{ salt['elife.cfg']('project.rds_username') }} -c 'ALTER SCHEMA public OWNER TO {{ pillar.profiles.db.username }}'
+        - env:
+            - PGPASSWORD: {{ salt['elife.cfg']('project.rds_password') }}
+        {% else %}
+        # local psql
+        - name: |
+            psql --no-password {{ pillar.profiles.db.name}} {{ pillar.elife.db_root.username }} -c 'ALTER SCHEMA public OWNER TO {{ pillar.profiles.db.username }}'
+        - env:
+            - PGPASSWORD: {{ pillar.elife.db_root.password }}
+        {% endif %}
+        - require:
+            - postgres_database: profiles-db
+
+profiles-db-possible-cleanup:
+    cmd.run:
+{% if pillar.elife.env in ['dev', 'ci'] %}
+        # no RDS supported
+        - name: |
+            psql --no-password {{ pillar.profiles.db.name}} {{ pillar.profiles.db.username }} -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;'
+        - env:
+            - PGPASSWORD: {{ pillar.profiles.db.password }}
+        - require:
+            - profiles-db
+{% else %}
+        - name: echo "Nothing to do"
+{% endif %}
+

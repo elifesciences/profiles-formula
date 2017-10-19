@@ -9,7 +9,7 @@ orcid-dummy-repository-reset:
 
 orcid-dummy-repository:
     builder.git_latest:
-        - name: git@github.com:elifesciences/orcid-dummy.git
+        - name: https://github.com/elifesciences/orcid-dummy
         - identity: {{ pillar.elife.projects_builder.key or '' }}
         - rev: master
         - target: /srv/orcid-dummy/
@@ -49,6 +49,7 @@ orcid-dummy-composer-install:
           - COMPOSER_DISCARD_CHANGES: 'true'
         - require:
             - orcid-dummy-repository
+            - composer
 
 orcid-dummy-nginx-vhost:
     file.managed:
