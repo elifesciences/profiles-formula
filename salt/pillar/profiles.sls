@@ -24,6 +24,9 @@ profiles:
         pinned_revision_file: /srv/profiles/orcid-dummy.sha1
 
 elife:
+    aws:
+        access_key_id: AKIAFAKE
+        secret_access_key: fake
     newrelic_python:
         application_folder: /srv/profiles
         service: # blank as always restarted
