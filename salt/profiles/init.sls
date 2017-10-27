@@ -133,3 +133,13 @@ profiles-logrotate:
         - template: jinja
         - require:
             - profiles-logs
+
+{% if pillar.elife.env in ['dev', 'ci'] %}
+profiles-topic-create:
+    cmd.run:
+        - name: aws --endpoint-url=http://localhost:4100 sns create-topic --name=profiles--{{ pillar.elife.env }}
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - goaws
+            - aws-credentials-deploy-user
+{% endif %}
