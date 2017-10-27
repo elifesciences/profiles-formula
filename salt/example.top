@@ -5,6 +5,8 @@ base:
         - elife.uwsgi
         - elife.nginx
         - elife.postgresql
+        - elife.aws-credentials
+        - elife.aws-cli
         - profiles
         - profiles.postgresql
         - elife.newrelic-python
@@ -13,3 +15,5 @@ base:
         - elife.composer
         - elife.nginx-php7
         - profiles.orcid-dummy
+        - elife.docker
+        - elife.goaws
