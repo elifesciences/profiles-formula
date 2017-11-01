@@ -27,6 +27,10 @@ elife:
     aws:
         access_key_id: AKIAFAKE
         secret_access_key: fake
+    uwsgi:
+        services:
+            profiles:
+                folder: /srv/profiles
     newrelic_python:
         application_folder: /srv/profiles
         service: # blank as always restarted
