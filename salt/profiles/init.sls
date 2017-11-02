@@ -82,6 +82,7 @@ profiles-uwsgi-config:
             - profiles-repository
 
 profiles-uwsgi-service:
+    # to ensure restart
     cmd.run:
         - name: service uwsgi-profiles restart
         - require:
@@ -90,6 +91,14 @@ profiles-uwsgi-service:
             - profiles-install
             - profiles-uwsgi-config
             - uwsgi-services
+
+    # to enable on boot
+    service.running:
+        - name: uwsgi-profiles
+        - enable: True
+        - require:
+            - cmd: profiles-uwsgi-service
+
 
 profiles-nginx-vhost:
     file.managed:
