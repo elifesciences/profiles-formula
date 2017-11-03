@@ -22,7 +22,10 @@ profiles:
         level: DEBUG
     orcid_dummy:
         pinned_revision_file: /srv/profiles/orcid-dummy.sha1
-
+    sns:
+        name: bus-profiles
+        subscriber: null
+        region: us-east-1
 elife:
     aws:
         access_key_id: AKIAFAKE
