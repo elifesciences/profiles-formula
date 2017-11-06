@@ -23,7 +23,7 @@ profiles:
     orcid_dummy:
         pinned_revision_file: /srv/profiles/orcid-dummy.sha1
     sns:
-        name: bus-profiles
+        name: profiles
         subscriber: null
         region: us-east-1
 
