@@ -7,9 +7,9 @@ base:
         - elife.postgresql
         - elife.aws-credentials
         - elife.aws-cli
+        - elife.newrelic-python
         - profiles
         - profiles.postgresql
-        - elife.newrelic-python
         # for testing purposes:
         - elife.php7
         - elife.composer
