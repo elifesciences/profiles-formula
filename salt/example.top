@@ -14,6 +14,6 @@ base:
         - elife.php7
         - elife.composer
         - elife.nginx-php7
-        - profiles.orcid-dummy
+        - elife.php-dummies
         - elife.docker
         - elife.goaws

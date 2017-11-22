@@ -20,8 +20,6 @@ profiles:
         port: 5432
     logging:
         level: DEBUG
-    orcid_dummy:
-        pinned_revision_file: /srv/profiles/orcid-dummy.sha1
     sns:
         name: bus-profiles
         subscriber: null
@@ -39,3 +37,8 @@ elife:
         application_folder: /srv/profiles
         service: # blank as always restarted
         dependency_state: profiles-install
+    php_dummies:
+        orcid_dummy:
+            repository: https://github.com/elifesciences/orcid-dummy
+            pinned_revision_file: /srv/profiles/orcid-dummy.sha1
+            port: 8081  # 8082 for https
