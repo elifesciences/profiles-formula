@@ -10,8 +10,8 @@ profiles:
         token_uri: https://orcid.org/oauth/token
         client_id: null
         client_secret: null
-        public_access_token: null
-        webhook_token: null
+        read_public_access_token: null
+        webhook_access_token: null
     default_host: localhost
     default_scheme: http
     db:
