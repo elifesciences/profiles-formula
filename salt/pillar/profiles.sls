@@ -12,6 +12,7 @@ profiles:
         client_secret: null
         read_public_access_token: null
         webhook_access_token: null
+        webhook_key: null
     default_host: localhost
     default_scheme: http
     db:
