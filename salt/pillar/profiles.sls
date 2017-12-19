@@ -35,3 +35,7 @@ elife:
         application_folder: /srv/profiles
         service: # blank as always restarted
         dependency_state: profiles-install
+    coveralls:
+        tokens:
+            profiles: somefaketoken
+
