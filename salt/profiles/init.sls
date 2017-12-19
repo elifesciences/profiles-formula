@@ -133,7 +133,7 @@ profiles-logrotate:
 {% if pillar.elife.env in ['dev', 'ci'] %}
 profiles-topic-create:
     cmd.run:
-        - name: aws --endpoint-url=http://localhost:4100 sns create-topic --name=profiles--{{ pillar.elife.env }}
+        - name: aws --endpoint-url=http://localhost:4100 sns create-topic --name={{ pillar.profiles.sns.name }}--{{ pillar.elife.env }}
         - user: {{ pillar.elife.deploy_user.username }}
         - require:
             - goaws

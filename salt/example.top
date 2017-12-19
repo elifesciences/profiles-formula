@@ -7,13 +7,13 @@ base:
         - elife.postgresql
         - elife.aws-credentials
         - elife.aws-cli
+        - elife.newrelic-python
         - profiles
         - profiles.postgresql
-        - elife.newrelic-python
         # for testing purposes:
         - elife.php7
         - elife.composer
         - elife.nginx-php7
-        - profiles.orcid-dummy
+        - elife.php-dummies
         - elife.docker
         - elife.goaws
