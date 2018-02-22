@@ -4,7 +4,7 @@ base:
         - elife.python3
         - elife.uwsgi
         - elife.nginx
-        #- elife.postgresql
+        - elife.postgresql-container
         - elife.aws-credentials
         - elife.aws-cli
         - elife.newrelic-python

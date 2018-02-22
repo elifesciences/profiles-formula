@@ -7,12 +7,14 @@ profiles-db-user:
         - createdb: True
         {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
         # remote psql
-        - db_user: {{ salt['elife.cfg']('project.rds_username') }}
-        - db_password: {{ salt['elife.cfg']('project.rds_password') }}
         - db_host: {{ salt['elife.cfg']('cfn.outputs.RDSHost') }}
         - db_port: {{ salt['elife.cfg']('cfn.outputs.RDSPort') }}
+        - db_user: {{ salt['elife.cfg']('project.rds_username') }}
+        - db_password: {{ salt['elife.cfg']('project.rds_password') }}
         {% else %}
         # local psql
+        - db_host: localhost
+        - db_port: 5432
         - db_user: {{ pillar.elife.db_root.username }}
         - db_password: {{ pillar.elife.db_root.password }}
         {% endif %}
@@ -25,13 +27,15 @@ profiles-db:
         {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
         # remote psql
         - name: {{ salt['elife.cfg']('project.rds_dbname') }}
-        - db_user: {{ salt['elife.cfg']('project.rds_username') }}
-        - db_password: {{ salt['elife.cfg']('project.rds_password') }}
         - db_host: {{ salt['elife.cfg']('cfn.outputs.RDSHost') }}
         - db_port: {{ salt['elife.cfg']('cfn.outputs.RDSPort') }}
+        - db_user: {{ salt['elife.cfg']('project.rds_username') }}
+        - db_password: {{ salt['elife.cfg']('project.rds_password') }}
         {% else %}
         # local psql
         - name: {{ pillar.profiles.db.name }}
+        - db_host: localhost
+        - db_port: 5432
         - db_user: {{ pillar.elife.db_root.username }}
         - db_password: {{ pillar.elife.db_root.password }}
         {% endif %}
@@ -50,7 +54,7 @@ profiles-db:
         {% else %}
         # local psql
         - name: |
-            psql --no-password {{ pillar.profiles.db.name}} {{ pillar.elife.db_root.username }} -c 'ALTER SCHEMA public OWNER TO {{ pillar.profiles.db.username }}'
+            psql -h localhost --no-password {{ pillar.profiles.db.name}} {{ pillar.elife.db_root.username }} -c 'ALTER SCHEMA public OWNER TO {{ pillar.profiles.db.username }}'
         - env:
             - PGPASSWORD: {{ pillar.elife.db_root.password }}
         {% endif %}
@@ -62,7 +66,7 @@ profiles-db-possible-cleanup:
 {% if pillar.elife.env in ['dev', 'ci'] %}
         # no RDS supported
         - name: |
-            psql --no-password {{ pillar.profiles.db.name}} {{ pillar.profiles.db.username }} -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;'
+            psql -h localhost --no-password {{ pillar.profiles.db.name}} {{ pillar.profiles.db.username }} -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;'
         - env:
             - PGPASSWORD: {{ pillar.profiles.db.password }}
         - require:
