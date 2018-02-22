@@ -63,7 +63,7 @@ profiles-clients-config:
 
 profiles-install:
     cmd.run:
-        - name: ./install.sh
+        - name: PROFILES_SKIP_DB=1 ./install.sh
         - cwd: /srv/profiles/
         - user: {{ pillar.elife.deploy_user.username }}
         - require:
@@ -154,13 +154,25 @@ profiles-docker-compose-yml:
         - require:
             - profiles-docker-compose-folder
 
-profiles-docker-containers:
+profiles-old-uwsgi-cleanup:
     cmd.run:
         - name: |
-            /usr/local/bin/docker-compose up --force-recreate -d
+            systemctl stop uwsgi-profiles || true
+
+profiles-docker-containers:
+    cmd.run:
+        - name: /usr/local/bin/docker-compose up --force-recreate -d
         - user: {{ pillar.elife.deploy_user.username }}
         - cwd: /home/{{ pillar.elife.deploy_user.username }}/profiles
         - require:
             - profiles-docker-compose-.env
             - profiles-containers-env
             - profiles-docker-compose-yml
+            - profiles-old-uwsgi-cleanup
+
+profiles-migrate:
+    cmd.run:
+        - name: docker wait profiles_migrate_1
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - profiles-docker-containers
