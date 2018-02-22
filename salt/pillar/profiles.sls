@@ -5,9 +5,9 @@ profiles:
             client_secret: bar
             redirect_uri: https://example.com/check
     orcid:
-        api_uri: http://localhost:8081
-        authorize_uri: http://localhost:8081/oauth2/authorize
-        token_uri: http://localhost:8081/oauth2/token
+        api_uri: http://localhost:8001
+        authorize_uri: http://localhost:8001/oauth2/authorize
+        token_uri: http://localhost:8001/oauth2/token
         client_id: null
         client_secret: null
         read_public_access_token: null
@@ -27,25 +27,21 @@ profiles:
         name: bus-profiles
         subscriber: null
         region: us-east-1
+        # TODO: add optional goaws endpoint_url
 
 elife:
     aws:
         access_key_id: AKIAFAKE
         secret_access_key: fake
-    uwsgi:
-        services:
-            profiles:
-                folder: /srv/profiles
-    newrelic_python:
-        application_folder: /srv/profiles
-        service: # blank as always restarted
-        dependency_state: profiles-install
+    sidecars:
+        main: elifesciences/profiles
+        containers:
+            orcid_dummy:
+                name: orcid-dummy
+                image: elifesciences/orcid-dummy
+                port: 8001
+                enabled: true
     coveralls:
         tokens:
             profiles: somefaketoken
-    php_dummies:
-        orcid_dummy:
-            repository: https://github.com/elifesciences/orcid-dummy
-            pinned_revision_file: /srv/profiles/orcid-dummy.sha1
-            port: 8081  # 8082 for https
 
