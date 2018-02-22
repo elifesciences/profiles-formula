@@ -4,16 +4,13 @@ base:
         - elife.python3
         - elife.uwsgi
         - elife.nginx
-        - elife.postgresql
+        #- elife.postgresql
         - elife.aws-credentials
         - elife.aws-cli
         - elife.newrelic-python
+        - elife.docker
+        - elife.sidecars
         - profiles
         - profiles.postgresql
         # for testing purposes:
-        - elife.php7
-        - elife.composer
-        - elife.nginx-php7
-        - elife.php-dummies
-        - elife.docker
         - elife.goaws
