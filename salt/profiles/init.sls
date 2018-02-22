@@ -81,25 +81,6 @@ profiles-uwsgi-config:
         - require:
             - profiles-repository
 
-profiles-uwsgi-service:
-    # to ensure restart
-    cmd.run:
-        - name: service uwsgi-profiles restart
-        - require:
-            - profiles-app-config
-            - profiles-clients-config
-            - profiles-install
-            - profiles-uwsgi-config
-            - uwsgi-services
-
-    # to enable on boot
-    service.running:
-        - name: uwsgi-profiles
-        - enable: True
-        - require:
-            - cmd: profiles-uwsgi-service
-
-
 profiles-nginx-vhost:
     file.managed:
         - name: /etc/nginx/sites-enabled/profiles.conf
@@ -107,7 +88,6 @@ profiles-nginx-vhost:
         - template: jinja
         - require:
             - nginx-config
-            - profiles-uwsgi-service
         - listen_in:
             - service: nginx-server-service
 
@@ -139,3 +119,48 @@ profiles-topic-create:
             - goaws
             - aws-credentials-deploy-user
 {% endif %}
+
+profiles-docker-compose-folder:
+    file.directory:
+        - name: /home/{{ pillar.elife.deploy_user.username }}/profiles/
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - deploy-user
+
+# variable for docker-compose
+profiles-docker-compose-.env:
+    file.managed:
+        - name: /home/{{ pillar.elife.deploy_user.username }}/profiles/.env
+        - source: salt://profiles/config/home-deployuser-profiles-.env
+        - makedirs: True
+        - template: jinja
+        - require:
+            - profiles-docker-compose-folder
+
+# variables for the containers
+profiles-containers-env:
+    file.managed:
+        - name: /home/{{ pillar.elife.deploy_user.username }}/profiles/containers.env
+        - source: salt://profiles/config/home-deployuser-profiles-containers.env
+        - template: jinja
+        - require:
+            - profiles-docker-compose-folder
+
+profiles-docker-compose-yml:
+    file.managed:
+        - name: /home/{{ pillar.elife.deploy_user.username }}/profiles/docker-compose.yml
+        - source: salt://profiles/config/home-deployuser-profiles-docker-compose.yml
+        - template: jinja
+        - require:
+            - profiles-docker-compose-folder
+
+profiles-docker-containers:
+    cmd.run:
+        - name: |
+            /usr/local/bin/docker-compose up --force-recreate -d
+        - user: {{ pillar.elife.deploy_user.username }}
+        - cwd: /home/{{ pillar.elife.deploy_user.username }}/profiles
+        - require:
+            - profiles-docker-compose-.env
+            - profiles-containers-env
+            - profiles-docker-compose-yml
