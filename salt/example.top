@@ -5,12 +5,13 @@ base:
         - elife.uwsgi
         - elife.nginx
         - elife.postgresql-container
+        - elife.postgresql-client
         - elife.aws-credentials
         - elife.aws-cli
         - elife.newrelic-python
         - elife.docker
         - elife.sidecars
-        - profiles
-        - profiles.postgresql
         # for testing purposes:
         - elife.goaws
+        - profiles.postgresql
+        - profiles
