@@ -10,6 +10,7 @@ base:
         - elife.aws-cli
         - elife.newrelic-python
         - elife.docker
+        - elife.docker-databases
         - elife.sidecars
         # for testing purposes:
         - elife.goaws
