@@ -158,6 +158,7 @@ profiles-old-uwsgi-cleanup:
     cmd.run:
         - name: |
             systemctl stop uwsgi-profiles || true
+            rm -f /lib/systemd/system/uwsgi-profiles.service
 
 profiles-docker-containers:
     cmd.run:
