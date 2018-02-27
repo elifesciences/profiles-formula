@@ -144,12 +144,6 @@ profiles-docker-compose-yml:
         - require:
             - profiles-docker-compose-folder
 
-profiles-old-uwsgi-cleanup:
-    cmd.run:
-        - name: |
-            systemctl stop uwsgi-profiles || true
-            rm -f /lib/systemd/system/uwsgi-profiles.service
-
 profiles-docker-containers:
     cmd.run:
         - name: /usr/local/bin/docker-compose up --force-recreate -d
@@ -159,7 +153,6 @@ profiles-docker-containers:
             - profiles-docker-compose-.env
             - profiles-containers-env
             - profiles-docker-compose-yml
-            - profiles-old-uwsgi-cleanup
 
 profiles-migrate:
     cmd.run:
