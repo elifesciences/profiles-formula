@@ -61,18 +61,6 @@ profiles-clients-config:
         - require:
             - profiles-repository
 
-profiles-install:
-    cmd.run:
-        - name: PROFILES_SKIP_DB=1 ./install.sh
-        - cwd: /srv/profiles/
-        - user: {{ pillar.elife.deploy_user.username }}
-        - require:
-            - profiles-repository
-            - profiles-app-config
-            - profiles-clients-config
-            - profiles-db
-            - profiles-db-possible-cleanup
-
 profiles-uwsgi-config:
     file.managed:
         - name: /srv/profiles/uwsgi.ini
