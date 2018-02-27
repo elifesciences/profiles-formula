@@ -1,4 +1,4 @@
-profiles-repository:
+profiles-folder:
     file.directory:
         - name: /srv/profiles
         - user: {{ pillar.elife.deploy_user.username }}
@@ -48,7 +48,7 @@ profiles-logs:
         - group: {{ pillar.elife.webserver.username }}
         - dir_mode: 775
         - require:
-            - profiles-repository
+            - profiles-folder
 
     # the g+s flag once made sure that new files and directories 
     # created inside by any user had the www-data group
@@ -56,7 +56,7 @@ profiles-logs:
     cmd.run:
         - name: chmod -R g-s /srv/profiles/var/logs
         - require:
-            - file: profiles-repository
+            - file: profiles-folder
 
 profiles-app-config:
     file.managed:
@@ -66,7 +66,7 @@ profiles-app-config:
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
         - require: 
-            - profiles-repository
+            - profiles-folder
             - profiles-logs
 
 profiles-clients-config:
@@ -77,7 +77,7 @@ profiles-clients-config:
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
         - require:
-            - profiles-repository
+            - profiles-folder
 
 profiles-uwsgi-config:
     file.managed:
@@ -85,7 +85,7 @@ profiles-uwsgi-config:
         - source: salt://profiles/config/srv-profiles-uwsgi.ini
         - template: jinja
         - require:
-            - profiles-repository
+            - profiles-folder
 
 profiles-nginx-vhost:
     file.managed:
