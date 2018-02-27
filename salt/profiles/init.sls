@@ -166,3 +166,13 @@ profiles-migrate:
         - user: {{ pillar.elife.deploy_user.username }}
         - require:
             - profiles-docker-containers
+
+integration-smoke-tests:
+    file.managed:
+        - name: /srv/profiles/smoke_tests.sh
+        - source: salt://profiles/config/srv-profiles-smoke_tests.sh
+        - template: jinja
+        - user: {{ pillar.elife.deploy_user.username }}
+        - mode: 755
+        - require: 
+            - profiles-folder
