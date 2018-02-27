@@ -14,9 +14,6 @@ profiles-repository:
         - name: /srv/profiles
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
-        - recurse:
-            - user
-            - group
         - require:
             - builder: profiles-repository
 
