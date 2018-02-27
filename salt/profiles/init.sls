@@ -46,6 +46,7 @@ profiles-logs:
         - name: /srv/profiles/var/logs/
         - user: {{ pillar.elife.webserver.username }}
         - group: {{ pillar.elife.webserver.username }}
+        - makedirs: True
         - dir_mode: 775
         - require:
             - profiles-folder
