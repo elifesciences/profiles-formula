@@ -4,6 +4,43 @@ profiles-repository:
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
 
+    # deprecated: remove once all hosts are cleaned up
+    cmd.run:
+        - name: |
+            rm -rf adr
+            rm -f .adr-dir
+            rm -f app.cfg.dist
+            rm -rf build
+            rm -f clients.yaml.dist
+            rm -rf config/
+            rm -f .coveragerc
+            rm -f dev.env
+            rm -f docker-compose*.yml
+            rm -f Dockerfile*
+            rm -f .dockerignore
+            rm -f .env
+            rm -f .flake8
+            rm -rf .git
+            rm -f .gitignore
+            rm -f install.sh
+            rm -f Jenkinsfile*
+            rm -f LICENSE
+            rm -f manage.py
+            rm -rf migrations
+            rm -f orcid-dummy.sha1
+            rm -rf profiles
+            rm -f project_tests.sh
+            rm -f .pylintrc
+            rm -f README.md
+            rm -f requirements*.txt
+            rm -f smoke_tests*.sh
+            rm -rf test
+            rm -f update-orcid-dummy.sh
+            rm -rf venv
+            rm -f wait_for_port
+        - cwd: /srv/profiles
+        - user: {{ pillar.elife.deploy_user.username }}
+
 profiles-logs:
     file.directory:
         - name: /srv/profiles/var/logs/
