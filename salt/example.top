@@ -8,7 +8,6 @@ base:
         - elife.postgresql-client
         - elife.aws-credentials
         - elife.aws-cli
-        - elife.newrelic-python
         - elife.docker
         - elife.docker-databases
         - elife.sidecars
