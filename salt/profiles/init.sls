@@ -26,17 +26,14 @@ profiles-logs:
         - user: {{ pillar.elife.webserver.username }}
         - group: {{ pillar.elife.webserver.username }}
         - dir_mode: 775
-        - file_mode: 664
-        - recurse:
-            - user
-            - group
         - require:
             - profiles-repository
 
-    # the g+s flag makes sure that new files and directories 
-    # created inside have the www-data group
+    # the g+s flag once made sure that new files and directories 
+    # created inside by any user had the www-data group
+    # deprecated: remove once not needed anywhere
     cmd.run:
-        - name: chmod -R g+s /srv/profiles/var/logs
+        - name: chmod -R g-s /srv/profiles/var/logs
         - require:
             - file: profiles-repository
 
