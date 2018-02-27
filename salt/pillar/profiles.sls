@@ -44,4 +44,7 @@ elife:
     coveralls:
         tokens:
             profiles: somefaketoken
-
+    goaws:
+        host: goaws
+        topics:
+            - profiles--dev
