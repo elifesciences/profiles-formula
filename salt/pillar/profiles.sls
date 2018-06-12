@@ -3,7 +3,9 @@ profiles:
         some-app:
             client_id: foo
             client_secret: bar
-            redirect_uri: https://example.com/check
+            redirect_uris:
+                - https://example.com/check
+                - https://testing.example.com/check
     orcid:
         api_uri: http://localhost:8001
         authorize_uri: http://localhost:8001/oauth2/authorize
