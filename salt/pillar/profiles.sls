@@ -30,6 +30,10 @@ profiles:
         subscriber: null
         region: us-east-1
         # TODO: add optional goaws endpoint_url
+    consumer_groups_filter:
+        api_gateway:
+            username: api-gateway
+            password: some-credentials
 
 elife:
     aws:
