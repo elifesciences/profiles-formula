@@ -5,7 +5,6 @@ base:
         - elife.uwsgi
         - elife.nginx
         - elife.postgresql-container
-        - elife.postgresql-client
         - elife.aws-credentials
         - elife.aws-cli
         - elife.docker
