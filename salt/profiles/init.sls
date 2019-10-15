@@ -1,44 +1,63 @@
-profiles-repository:
-    builder.git_latest:
-        - name: git@github.com:elifesciences/profiles.git
-        - identity: {{ pillar.elife.projects_builder.key or '' }}
-        - rev: {{ salt['elife.rev']() }}
-        - branch: {{ salt['elife.branch']() }}
-        - target: /srv/profiles/
-        - force_fetch: True
-        - force_checkout: True
-        - force_reset: True
-        - fetch_pull_requests: True
-
+profiles-folder:
     file.directory:
         - name: /srv/profiles
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
-        - recurse:
-            - user
-            - group
-        - require:
-            - builder: profiles-repository
+
+    # deprecated: remove once all hosts are cleaned up
+    cmd.run:
+        - name: |
+            rm -rf adr
+            rm -f .adr-dir
+            rm -f app.cfg.dist
+            rm -rf build
+            rm -f clients.yaml.dist
+            rm -rf config/
+            rm -f .coveragerc
+            rm -f dev.env
+            rm -f docker-compose*.yml
+            rm -f Dockerfile*
+            rm -f .dockerignore
+            rm -f .env
+            rm -f .flake8
+            rm -rf .git
+            rm -f .gitignore
+            rm -f install.sh
+            rm -f Jenkinsfile*
+            rm -f LICENSE
+            rm -f manage.py
+            rm -rf migrations
+            rm -f orcid-dummy.sha1
+            rm -rf profiles
+            rm -f project_tests.sh
+            rm -f .pylintrc
+            rm -f README.md
+            rm -f requirements*.txt
+            rm -f smoke_tests*.sh
+            rm -rf test
+            rm -f update-orcid-dummy.sh
+            rm -rf venv
+            rm -f wait_for_port
+        - cwd: /srv/profiles
+        - user: {{ pillar.elife.deploy_user.username }}
 
 profiles-logs:
     file.directory:
         - name: /srv/profiles/var/logs/
         - user: {{ pillar.elife.webserver.username }}
         - group: {{ pillar.elife.webserver.username }}
+        - makedirs: True
         - dir_mode: 775
-        - file_mode: 664
-        - recurse:
-            - user
-            - group
         - require:
-            - profiles-repository
+            - profiles-folder
 
-    # the g+s flag makes sure that new files and directories 
-    # created inside have the www-data group
+    # the g+s flag once made sure that new files and directories 
+    # created inside by any user had the www-data group
+    # deprecated: remove once not needed anywhere
     cmd.run:
-        - name: chmod -R g+s /srv/profiles/var/logs
+        - name: chmod -R g-s /srv/profiles/var/logs
         - require:
-            - file: profiles-repository
+            - file: profiles-folder
 
 profiles-app-config:
     file.managed:
@@ -48,7 +67,7 @@ profiles-app-config:
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
         - require: 
-            - profiles-repository
+            - profiles-folder
             - profiles-logs
 
 profiles-clients-config:
@@ -59,19 +78,7 @@ profiles-clients-config:
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
         - require:
-            - profiles-repository
-
-profiles-install:
-    cmd.run:
-        - name: ./install.sh
-        - cwd: /srv/profiles/
-        - user: {{ pillar.elife.deploy_user.username }}
-        - require:
-            - profiles-repository
-            - profiles-app-config
-            - profiles-clients-config
-            - profiles-db
-            - profiles-db-possible-cleanup
+            - profiles-folder
 
 profiles-uwsgi-config:
     file.managed:
@@ -79,26 +86,7 @@ profiles-uwsgi-config:
         - source: salt://profiles/config/srv-profiles-uwsgi.ini
         - template: jinja
         - require:
-            - profiles-repository
-
-profiles-uwsgi-service:
-    # to ensure restart
-    cmd.run:
-        - name: service uwsgi-profiles restart
-        - require:
-            - profiles-app-config
-            - profiles-clients-config
-            - profiles-install
-            - profiles-uwsgi-config
-            - uwsgi-services
-
-    # to enable on boot
-    service.running:
-        - name: uwsgi-profiles
-        - enable: True
-        - require:
-            - cmd: profiles-uwsgi-service
-
+            - profiles-folder
 
 profiles-nginx-vhost:
     file.managed:
@@ -107,7 +95,6 @@ profiles-nginx-vhost:
         - template: jinja
         - require:
             - nginx-config
-            - profiles-uwsgi-service
         - listen_in:
             - service: nginx-server-service
 
@@ -130,12 +117,63 @@ profiles-logrotate:
         - require:
             - profiles-logs
 
-{% if pillar.elife.env in ['dev', 'ci'] %}
-profiles-topic-create:
-    cmd.run:
-        - name: aws --endpoint-url=http://localhost:4100 sns create-topic --name={{ pillar.profiles.sns.name }}--{{ pillar.elife.env }}
+profiles-docker-compose-folder:
+    file.directory:
+        - name: /home/{{ pillar.elife.deploy_user.username }}/profiles/
         - user: {{ pillar.elife.deploy_user.username }}
         - require:
-            - goaws
-            - aws-credentials-deploy-user
-{% endif %}
+            - deploy-user
+
+# variable for docker-compose
+profiles-docker-compose-.env:
+    file.managed:
+        - name: /home/{{ pillar.elife.deploy_user.username }}/profiles/.env
+        - source: salt://profiles/config/home-deployuser-profiles-.env
+        - makedirs: True
+        - template: jinja
+        - require:
+            - profiles-docker-compose-folder
+
+# variables for the containers
+profiles-containers-env:
+    file.managed:
+        - name: /home/{{ pillar.elife.deploy_user.username }}/profiles/containers.env
+        - source: salt://profiles/config/home-deployuser-profiles-containers.env
+        - template: jinja
+        - require:
+            - profiles-docker-compose-folder
+
+profiles-docker-compose-yml:
+    file.managed:
+        - name: /home/{{ pillar.elife.deploy_user.username }}/profiles/docker-compose.yml
+        - source: salt://profiles/config/home-deployuser-profiles-docker-compose.yml
+        - template: jinja
+        - require:
+            - profiles-docker-compose-folder
+
+profiles-docker-containers:
+    cmd.run:
+        - name: /usr/local/bin/docker-compose up --force-recreate -d
+        - user: {{ pillar.elife.deploy_user.username }}
+        - cwd: /home/{{ pillar.elife.deploy_user.username }}/profiles
+        - require:
+            - profiles-docker-compose-.env
+            - profiles-containers-env
+            - profiles-docker-compose-yml
+
+profiles-migrate:
+    cmd.run:
+        - name: docker wait profiles_migrate_1
+        - user: {{ pillar.elife.deploy_user.username }}
+        - require:
+            - profiles-docker-containers
+
+integration-smoke-tests:
+    file.managed:
+        - name: /srv/profiles/smoke_tests.sh
+        - source: salt://profiles/config/srv-profiles-smoke_tests.sh
+        - template: jinja
+        - user: {{ pillar.elife.deploy_user.username }}
+        - mode: 755
+        - require: 
+            - profiles-folder
