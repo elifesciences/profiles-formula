@@ -43,8 +43,6 @@ profiles-db:
             - profiles-db-user
 
     cmd.run:
-        - owner: {{ pillar.profiles.db.username }}
-        - name: public
         {% if salt['elife.cfg']('cfn.outputs.RDSHost') %}
         # remote psql
         - name: |

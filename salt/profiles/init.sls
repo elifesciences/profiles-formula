@@ -39,7 +39,7 @@ profiles-folder:
             rm -rf venv
             rm -f wait_for_port
         - cwd: /srv/profiles
-        - user: {{ pillar.elife.deploy_user.username }}
+        - runas: {{ pillar.elife.deploy_user.username }}
 
 profiles-logs:
     file.directory:
@@ -154,7 +154,7 @@ profiles-docker-compose-yml:
 profiles-docker-containers:
     cmd.run:
         - name: /usr/local/bin/docker-compose up --force-recreate -d
-        - user: {{ pillar.elife.deploy_user.username }}
+        - runas: {{ pillar.elife.deploy_user.username }}
         - cwd: /home/{{ pillar.elife.deploy_user.username }}/profiles
         - require:
             - profiles-docker-compose-.env
@@ -164,7 +164,7 @@ profiles-docker-containers:
 profiles-migrate:
     cmd.run:
         - name: docker wait profiles_migrate_1
-        - user: {{ pillar.elife.deploy_user.username }}
+        - runas: {{ pillar.elife.deploy_user.username }}
         - require:
             - profiles-docker-containers
 
