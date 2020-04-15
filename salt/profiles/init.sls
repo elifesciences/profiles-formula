@@ -151,12 +151,20 @@ profiles-docker-compose-yml:
         - require:
             - profiles-docker-compose-folder
 
+orcid-dummy-nginx-vhost:
+    file.managed:
+        - name: /etc/nginx/sites-enabled/orcid-dummy.conf
+        - source: salt://profiles/config/etc-nginx-sites-enabled-orcid-dummy.conf
+        - listen_in:
+            - service: nginx-server-service
+
 profiles-docker-containers:
     cmd.run:
         - name: /usr/local/bin/docker-compose up --force-recreate -d
         - runas: {{ pillar.elife.deploy_user.username }}
         - cwd: /home/{{ pillar.elife.deploy_user.username }}/profiles
         - require:
+            - orcid-dummy-nginx-vhost
             - profiles-docker-compose-.env
             - profiles-containers-env
             - profiles-docker-compose-yml
