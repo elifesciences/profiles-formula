@@ -1,1 +1,1 @@
-elifeFormula('profiles', '/srv/profiles', null, ['s1804'])
+elifeFormula('profiles', '/srv/profiles', null, ['snsalt'])
