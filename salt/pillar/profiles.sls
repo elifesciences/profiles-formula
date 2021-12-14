@@ -47,9 +47,6 @@ elife:
                 image: elifesciences/orcid-dummy
                 port: 8001
                 enabled: true
-    coveralls:
-        tokens:
-            profiles: somefaketoken
     goaws:
         host: goaws
         topics:
