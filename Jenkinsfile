@@ -1,1 +1,1 @@
-elifeFormula('profiles', '/srv/profiles', null, ['s2004'])
+elifeFormula('profiles', '/srv/profiles')
