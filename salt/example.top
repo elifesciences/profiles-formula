@@ -7,7 +7,7 @@ base:
         - elife.aws-credentials
         - elife.aws-cli
         - elife.docker-native
-        - elife.docker-databases
+        #- elife.docker-databases
         - elife.sidecars
         # for testing purposes:
         - elife.goaws
