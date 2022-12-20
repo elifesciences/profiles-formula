@@ -165,6 +165,7 @@ profiles-docker-containers:
         - runas: {{ pillar.elife.deploy_user.username }}
         - cwd: /home/{{ pillar.elife.deploy_user.username }}/profiles
         - require:
+            - docker-ready
             - orcid-dummy-nginx-vhost
             - profiles-docker-compose-.env
             - profiles-containers-env
