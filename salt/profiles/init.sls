@@ -166,14 +166,11 @@ profiles-docker-containers:
         - cwd: /home/{{ pillar.elife.deploy_user.username }}/profiles
         - require:
             - docker-ready
+            - postgresql-ready
             - orcid-dummy-nginx-vhost
             - profiles-docker-compose-.env
             - profiles-containers-env
             - profiles-docker-compose-yml
-        # restart postgresql if migration is to be run.
-        # there is an issue with postgresql not listening on an address until it's available.
-        - watch_in:
-            - service: postgresql
 
 profiles-migrate:
     cmd.run:
