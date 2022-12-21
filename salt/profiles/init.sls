@@ -155,6 +155,7 @@ orcid-dummy-nginx-vhost:
     file.managed:
         - name: /etc/nginx/sites-enabled/orcid-dummy.conf
         - source: salt://profiles/config/etc-nginx-sites-enabled-orcid-dummy.conf
+        - template: jinja
         - listen_in:
             - service: nginx-server-service
 
@@ -164,6 +165,8 @@ profiles-docker-containers:
         - runas: {{ pillar.elife.deploy_user.username }}
         - cwd: /home/{{ pillar.elife.deploy_user.username }}/profiles
         - require:
+            - docker-ready
+            - postgresql-ready
             - orcid-dummy-nginx-vhost
             - profiles-docker-compose-.env
             - profiles-containers-env
