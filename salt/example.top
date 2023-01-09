@@ -3,7 +3,6 @@ base:
         - elife
         - elife.uwsgi
         - elife.nginx
-        - elife.postgresql-container-removal
         - elife.postgresql-12
         - elife.aws-credentials
         - elife.aws-cli
