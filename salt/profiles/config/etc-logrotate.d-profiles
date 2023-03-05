@@ -1,4 +1,5 @@
 /srv/profiles/var/logs/*.log {
+    su www-data www-data
     daily
     rotate 30
     notifempty
