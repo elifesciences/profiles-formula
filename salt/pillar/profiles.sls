@@ -21,7 +21,7 @@ profiles:
         name: profiles
         username: foouser # case sensitive. use all lowercase
         password: barpass
-        host: 127.0.0.1
+        host: host.docker.internal
         port: 5432
     logging:
         level: DEBUG
@@ -47,13 +47,8 @@ elife:
                 image: elifesciences/orcid-dummy
                 port: 8001
                 enabled: true
-    coveralls:
-        tokens:
-            profiles: somefaketoken
     goaws:
         host: goaws
         topics:
             - profiles--dev
 
-    docker_postgresql:
-        image_tag: 11

@@ -1,7 +1,7 @@
 profiles-db-user:
     postgres_user.present:
         - name: {{ pillar.profiles.db.username }}
-        - encrypted: True
+        - encrypted: scram-sha-256
         - password: {{ pillar.profiles.db.password }}
         - refresh_password: True
         - createdb: True

@@ -3,10 +3,10 @@ base:
         - elife
         - elife.uwsgi
         - elife.nginx
-        - elife.postgresql-container
+        - elife.postgresql-12
         - elife.aws-credentials
         - elife.aws-cli
-        - elife.docker
+        - elife.docker-native
         - elife.docker-databases
         - elife.sidecars
         # for testing purposes:
