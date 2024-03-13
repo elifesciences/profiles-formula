@@ -1,0 +1,24 @@
+(orcid) {
+
+    log {
+        output file /var/log/caddy/orcid-dummy.access.log
+        format json {
+            time_format rfc3339
+        }
+    }
+
+    handle {
+        # elife-sidecars/Docker maps host port 8001 to guest port 8080
+        reverse_proxy localhost:8001
+    }
+}
+
+:8081 {
+    import orcid
+}
+
+{% if salt['elife.cfg']('cfn.outputs.DomainName') %}
+:8082 {
+    import ../snippets/certs
+    import orcid
+{% endif %}

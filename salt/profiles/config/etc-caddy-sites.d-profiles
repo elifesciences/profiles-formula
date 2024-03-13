@@ -1,0 +1,69 @@
+
+{% macro consumer_groups_filter(users) -%}
+# Authenticates the api-gateway.
+# Copies a filtered version of the api-gateway X-Consumer-Groups header
+# into X-Consumer-Groups-Filtered, only allowing the client to specify the
+# header if it carries an Authorization header too
+
+#variables_hash_max_size 2048; # to fit this map
+#map_hash_bucket_size 128;
+#map $remote_addr/$http_authorization $consumer_groups_filtered {
+#    # base case: do not allow header
+#    default "";
+#    # local requests case, don't check authentication
+#    "~^127.0.0.1/.*$" $http_x_consumer_groups;
+#    {% for i, user in users.items() -%}
+#    "~^.*/Basic {{ salt['hashutil.base64_b64encode'](user['username'] ~ ':' ~ user['password']) }}$" $http_x_consumer_groups;
+#    {% endfor -%}
+#}
+{%- endmacro -%}
+
+{{ consumer_groups_filter(pillar.profiles.consumer_groups_filter) }}
+
+(config) {
+
+    log {
+        output file /var/log/caddy/access.log
+        format json {
+            time_format rfc3339
+        }
+    }
+
+    handle {
+    
+        # authentication debugging
+        # header X-Consumer-Groups-Filtered $consumer_groups_filtered;
+
+        reverse_proxy 127.0.0.1:9000 {
+            transport http {
+                # drop connection after this many seconds.
+                # WARNING: this value *must* be higher than uwsgi's 'harakiri' value (10s): /srv/$app/uwsgi.ini
+                read_timeout 15s # drop connection after 15s if nothing read from reverse proxy.
+
+                #uwsgi_param HTTP_HOST {{ pillar.profiles.default_host }};
+                #uwsgi_param UWSGI_SCHEME {{ pillar.profiles.default_scheme }};
+                #uwsgi_param HTTP_X_CONSUMER_GROUPS $consumer_groups_filtered;
+
+                # Remove knowledge of proxies
+                #uwsgi_param HTTP_FORWARDED '';
+                #uwsgi_param HTTP_X_FORWARDED_FOR '';
+                #uwsgi_param HTTP_X_FORWARDED_HOST '';
+                #uwsgi_param HTTP_X_FORWARDED_PORT '';
+                #uwsgi_param HTTP_X_FORWARDED_PROTO '';
+
+            }
+        }
+    }
+}
+
+:80 {
+    import config
+}
+
+{% if salt['elife.cfg']('cfn.outputs.DomainName') -%}
+:443 {
+    import ../snippets/certs
+    import config
+}
+{% endif %}
+
