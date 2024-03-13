@@ -1,3 +1,9 @@
+profiles-ubr-db-backup:
+    file.managed:
+        - name: /etc/ubr/profiles-backup.yaml
+        - source: salt://profiles/config/etc-ubr-profiles-backup.yaml
+        - template: jinja
+
 profiles-folder:
     file.directory:
         - name: /srv/profiles
