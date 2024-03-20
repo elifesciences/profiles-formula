@@ -60,7 +60,7 @@ profiles-vhost:
         - require:
             - caddy-config
         - require_in:
-            - caddy-validate-config
+            - cmd: caddy-validate-config
         - listen_in:
             - service: caddy-server-service
 
