@@ -59,6 +59,8 @@ profiles-vhost:
         - template: jinja
         - require:
             - caddy-config
+        - require_in:
+            - caddy-validate-config
         - listen_in:
             - service: caddy-server-service
 
