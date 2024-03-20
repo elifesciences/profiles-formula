@@ -1,0 +1,57 @@
+(config) {
+
+    log {
+        output file /var/log/caddy/access.log
+        format json {
+            time_format rfc3339
+        }
+    }
+
+    handle {
+
+        # Authenticates the api-gateway.
+        # Copies a filtered version of the api-gateway X-Consumer-Groups header
+        # into X-Consumer-Groups-Filtered, only allowing the client to specify the
+        # header if it carries an Authorization header too
+        map {client_ip}/{http.request.header.authorization} {consumer_groups_filtered} {
+            "~^127.0.0.1/.*$" {http.request.header.http_x_consumer_groups}
+            {% for user in pillar.profiles.consumer_groups_filter.values() -%}
+            "~^.*/Basic {{ salt['hashutil.base64_b64encode'](user['username'] ~ ':' ~ user['password']) }}$" {http.request.header.http_x_consumer_groups}
+            {% endfor -%}
+            default ""
+        }
+
+        # authentication debugging
+        header X-Consumer-Groups-Filtered {consumer_groups_filtered}
+
+        reverse_proxy 127.0.0.1:9000 {
+
+            # replace any existing x-consumer-groups header
+            header_up X-Consumer-Groups {consumer_groups_filtered}
+
+            # Remove knowledge of proxies
+            header_down -Forwarded
+            header_down -X-Forwarded-For
+            header_down -X-Forwarded-Host
+            header_down -X-Forwarded-Port
+            header_down -X-Forwarded-Proto
+
+            transport http {
+                # drop connection after this many seconds.
+                # WARNING: this value *must* be higher than uwsgi's 'harakiri' value (10s): /srv/$app/uwsgi.ini
+                read_timeout 15s # drop connection after 15s if nothing read from reverse proxy.
+            }
+        }
+    }
+}
+
+:80 {
+    import config
+}
+
+{% if salt['elife.cfg']('cfn.outputs.DomainName') -%}
+:443 {
+    import ../snippets/certs
+    import config
+}
+{% endif %}

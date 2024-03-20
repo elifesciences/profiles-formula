@@ -4,6 +4,11 @@ services:
     wsgi:
         image: elifesciences/profiles:${IMAGE_TAG}
         command: venv/bin/uwsgi --ini=/srv/profiles/uwsgi.ini
+        {% if pillar.elife.webserver.app == "caddy" %}
+        # when using Caddy, replace any healthcheck with one that uses http
+        healthcheck:
+            test: ["CMD", "bash", "-c", "curl http://localhost:9000/ping | grep pong"]
+        {% endif %}
         volumes:
             - /srv/profiles/app.cfg:/srv/profiles/app.cfg
             - /srv/profiles/clients.yaml:/srv/profiles/clients.yaml
