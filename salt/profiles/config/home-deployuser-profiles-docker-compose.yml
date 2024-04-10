@@ -40,6 +40,21 @@ services:
             - sidecars
         env_file:
             - /home/{{ pillar.elife.deploy_user.username }}/profiles/containers.env
+    manage:
+        image: elifesciences/profiles:${IMAGE_TAG}
+        entrypoint: "venv/bin/python manage.py"
+        volumes:
+            - /srv/profiles/app.cfg:/srv/profiles/app.cfg
+            - /srv/profiles/clients.yaml:/srv/profiles/clients.yaml
+            - /srv/profiles/var/logs:/srv/profiles/var/logs
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        networks:
+            - default
+            - databases
+            - sidecars
+        env_file:
+            - /home/{{ pillar.elife.deploy_user.username }}/profiles/containers.env
 
 networks:
     default:
