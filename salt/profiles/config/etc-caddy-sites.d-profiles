@@ -31,7 +31,7 @@
 
         reverse_proxy 127.0.0.1:9000 {
 
-            # replace any existing x-consumer-groups header
+            # replaces any existing X-Consumer-Groups header
             header_up X-Consumer-Groups {consumer_groups_filtered}
 
             # Remove knowledge of proxies

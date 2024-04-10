@@ -8,7 +8,7 @@
     }
 
     handle {
-        # elife-sidecars/Docker maps host port 8001 to guest port 8080
+        # elife-sidecars/Docker then maps host port 8001 to guest port 8080
         reverse_proxy localhost:8001
     }
 }
