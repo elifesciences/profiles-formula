@@ -10,13 +10,18 @@
     handle {
 
         # Authenticates the api-gateway.
-        # Copies a filtered version of the api-gateway X-Consumer-Groups header
-        # into X-Consumer-Groups-Filtered, only allowing the client to specify the
-        # header if it carries an Authorization header too
-        map {client_ip}/{http.request.header.authorization} {consumer_groups_filtered} {
-            "~^127.0.0.1/.*$" {http.request.header.http_x_consumer_groups}
+        # Captures the value of the api-gateway "X-Consumer-Groups" HTTP header into the variable `consumer_groups_filtered`,
+        # but only if: the request is local (127.0.0.1) or has a valid HTTP Authorization header.
+        # lsh@2024-04-10: translation from nginx modified slightly to add the header as the third segment in the 
+        # regular expression so it's value can be captured. Placeholders (variables) can't otherwise be used.
+        # lsh@2024-04-10: how to test this?? using plain curl:
+        #   curl -v -H "X-Consumer-Groups: foobar" "http://127.0.0.1/profiles"
+        #   curl -v -H "X-Consumer-Groups: foobar" "http://some-user:some-credentials@localhost/profiles"
+        # if there is a match then 'foobar' should be present in the response header "X-Consumer-Groups-Filtered".
+        map {client_ip}/{http.request.header.authorization}/{http.request.header.X-Consumer-Groups} {consumer_groups_filtered} {
+            "~^127.0.0.1/.*/(.+)$" "${1}"
             {% for user in pillar.profiles.consumer_groups_filter.values() -%}
-            "~^.*/Basic {{ salt['hashutil.base64_b64encode'](user['username'] ~ ':' ~ user['password']) }}$" {http.request.header.http_x_consumer_groups}
+            "~^.*/Basic {{ salt['hashutil.base64_b64encode'](user['username'] ~ ':' ~ user['password']) }}/(.+)$" "${1}"
             {% endfor -%}
             default ""
         }
