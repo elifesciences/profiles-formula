@@ -10,43 +10,6 @@ profiles-folder:
         - user: {{ pillar.elife.deploy_user.username }}
         - group: {{ pillar.elife.deploy_user.username }}
 
-    # deprecated: remove once all hosts are cleaned up
-    cmd.run:
-        - name: |
-            rm -rf adr
-            rm -f .adr-dir
-            rm -f app.cfg.dist
-            rm -rf build
-            rm -f clients.yaml.dist
-            rm -rf config/
-            rm -f .coveragerc
-            rm -f dev.env
-            rm -f docker-compose*.yml
-            rm -f Dockerfile*
-            rm -f .dockerignore
-            rm -f .env
-            rm -f .flake8
-            rm -rf .git
-            rm -f .gitignore
-            rm -f install.sh
-            rm -f Jenkinsfile*
-            rm -f LICENSE
-            rm -f manage.py
-            rm -rf migrations
-            rm -f orcid-dummy.sha1
-            rm -rf profiles
-            rm -f project_tests.sh
-            rm -f .pylintrc
-            rm -f README.md
-            rm -f requirements*.txt
-            rm -f smoke_tests*.sh
-            rm -rf test
-            rm -f update-orcid-dummy.sh
-            rm -rf venv
-            rm -f wait_for_port
-        - cwd: /srv/profiles
-        - runas: {{ pillar.elife.deploy_user.username }}
-
 profiles-logs:
     file.directory:
         - name: /srv/profiles/var/logs/
@@ -94,7 +57,21 @@ profiles-uwsgi-config:
         - require:
             - profiles-folder
 
-profiles-nginx-vhost:
+{% if pillar.elife.webserver.app == "caddy" %}
+profiles-vhost:
+    file.managed:
+        - name: /etc/caddy/sites.d/profiles
+        - source: salt://profiles/config/etc-caddy-sites.d-profiles
+        - template: jinja
+        - require:
+            - caddy-config
+        - require_in:
+            - cmd: caddy-validate-config
+        - listen_in:
+            - service: caddy-server-service
+
+{% else %}
+profiles-vhost:
     file.managed:
         - name: /etc/nginx/sites-enabled/profiles.conf
         - source: salt://profiles/config/etc-nginx-sites-enabled-profiles.conf
@@ -103,6 +80,8 @@ profiles-nginx-vhost:
             - nginx-config
         - listen_in:
             - service: nginx-server-service
+
+{% endif %}
 
 profiles-syslog-ng:
     file.managed:
@@ -157,13 +136,27 @@ profiles-docker-compose-yml:
         - require:
             - profiles-docker-compose-folder
 
-orcid-dummy-nginx-vhost:
+{% if pillar.elife.webserver.app == "caddy" %}
+orcid-dummy-vhost:
+    file.managed:
+        - name: /etc/caddy/sites.d/orcid-dummy
+        - source: salt://profiles/config/etc-caddy-sites.d-orcid-dummy
+        - template: jinja
+        - require:
+            - caddy-config
+        - listen_in:
+            - service: caddy-server-service
+
+{% else %}
+orcid-dummy-vhost:
     file.managed:
         - name: /etc/nginx/sites-enabled/orcid-dummy.conf
         - source: salt://profiles/config/etc-nginx-sites-enabled-orcid-dummy.conf
         - template: jinja
         - listen_in:
             - service: nginx-server-service
+
+{% endif %}
 
 profiles-docker-containers:
     cmd.run:
@@ -173,7 +166,7 @@ profiles-docker-containers:
         - require:
             - docker-ready
             - postgresql-ready
-            - orcid-dummy-nginx-vhost
+            - orcid-dummy-vhost
             - profiles-docker-compose-.env
             - profiles-containers-env
             - profiles-docker-compose-yml
