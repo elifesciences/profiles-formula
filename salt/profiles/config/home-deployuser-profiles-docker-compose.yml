@@ -7,7 +7,9 @@ services:
         {% if pillar.elife.webserver.app == "caddy" %}
         # when using Caddy, replace any healthcheck with one that uses http
         healthcheck:
-            test: ["CMD", "bash", "-c", "curl http://localhost:9000/ping | grep pong"]
+            # lsh@2024-04-11: configuration is strict about the host used and will fail to recognise it even when the port is included,
+            # so we override the 'Host' header to exclude the port. Caddy does this already.
+            test: ["CMD", "bash", "-c", "curl -H 'Host: {{ pillar.profiles.default_host }}' http://{{ pillar.profiles.default_host }}:9000/ping | grep pong"]
         {% endif %}
         volumes:
             - /srv/profiles/app.cfg:/srv/profiles/app.cfg
