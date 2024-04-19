@@ -34,6 +34,7 @@
             # lsh@2024-04-11: app is strict about the host used and will fail to recognise it even when the port is included,
             # so we override the 'Host' header to exclude the port.
             header_up Host {{ pillar.profiles.default_host }}
+            header_up X-Forwarded-Proto {{ pillar.profiles.default_scheme }}
 
             # replaces any existing X-Consumer-Groups header
             header_up X-Consumer-Groups {consumer_groups_filtered}
