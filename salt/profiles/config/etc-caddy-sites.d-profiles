@@ -12,7 +12,7 @@
         # Authenticates the api-gateway.
         # Captures the value of the api-gateway "X-Consumer-Groups" HTTP header into the variable `consumer_groups_filtered`,
         # but only if: the request is local (127.0.0.1) or has a valid HTTP Authorization header.
-        # lsh@2024-04-10: translation from nginx modified slightly to add the header as the third segment in the 
+        # lsh@2024-04-10: translation from nginx modified slightly to add the header as the third segment in the
         # regular expression so it's value can be captured. Placeholders (variables) can't otherwise be used.
         # lsh@2024-04-10: how to test this?? using plain curl:
         #   curl -v -H "X-Consumer-Groups: foobar" "http://127.0.0.1/profiles"
@@ -51,6 +51,10 @@
                 # WARNING: this value *must* be higher than uwsgi's 'harakiri' value (10s): /srv/$app/uwsgi.ini
                 read_timeout 15s # drop connection after 15s if nothing read from reverse proxy.
             }
+
+            # Deal with status code = 0 from UWSGI http server
+            @emptyResponse status 0
+            replace_status @emptyResponse 500
         }
     }
 }
